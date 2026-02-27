@@ -347,86 +347,6 @@
     text-align: center;
   }
 
-  .qr-label {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 16px;
-  }
-
-  .qr-box {
-    display: inline-block;
-    padding: 12px;
-    background: var(--dark);
-    border: 1px solid var(--fire);
-    margin-bottom: 10px;
-  }
-
-  .qr-placeholder {
-    width: 160px;
-    height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-    line-height: 1.6;
-    text-transform: uppercase;
-    border: 1px dashed var(--border);
-    padding: 16px;
-  }
-
-  .qr-url {
-    font-size: 10px;
-    color: var(--fire);
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-    word-break: break-all;
-  }
-
-  .qr-hint {
-    font-size: 9px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 28px;
-  }
-
-  .hosting-steps {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    padding: 20px 24px;
-    text-align: left;
-    max-width: 480px;
-    margin: 0 auto;
-  }
-
-  .hosting-title {
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 14px;
-  }
-
-  .hosting-steps ol {
-    padding-left: 18px;
-  }
-
-  .hosting-steps li {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 0.05em;
-    line-height: 2;
-    text-transform: uppercase;
-  }
-
-  .hosting-steps li strong {
-    color: var(--text);
-  }
-
   @media print {
     body { background: white; }
     .reset-btn, .instructions, .qr-section { display: none; }
@@ -469,22 +389,6 @@
   <p class="instructions">Click a square when you complete it · Get 5 in a row to win!</p>
   <p class="instructions">Your card is unique — every student gets a different layout.</p>
   <button class="reset-btn" onclick="resetCard()">↺ Shuffle & Reset My Card</button>
-
-  <div class="qr-section">
-    <p class="qr-label">Share this card with your class</p>
-    <div class="qr-box" id="qrcode"></div>
-    <p class="qr-url" id="qrUrl"></p>
-    <p class="qr-hint">⬆ Replace the URL in the code with your hosted link to activate the QR code.</p>
-    <div class="hosting-steps">
-      <p class="hosting-title">🚀 How to Host (Free, 2 min)</p>
-      <ol>
-        <li>Go to <strong>netlify.com</strong> → "Add new site" → "Deploy manually"</li>
-        <li>Drag & drop this <strong>.html file</strong> into the upload area</li>
-        <li>Copy your live URL and replace <strong>YOUR-URL-HERE</strong> in the code</li>
-        <li>Students scan the QR code or open the link on their phones</li>
-      </ol>
-    </div>
-  </div>
 </footer>
 
 <div class="bingo-win-banner" id="winBanner">
@@ -493,12 +397,7 @@
   <button class="win-close" onclick="closeWin()">Keep Playing</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-// ─── CONFIG: Replace with your hosted URL after deploying ───────────────────
-const HOSTED_URL = 'YOUR-URL-HERE';
-// ────────────────────────────────────────────────────────────────────────────
-
 const ALL_CELLS = [
   { icon: "🎤", text: "Deliver your 30-second elevator pitch to a stranger" },
   { icon: "🔗", text: "Send a LinkedIn request to someone while still talking to them" },
@@ -603,30 +502,7 @@ function closeWin() {
   document.getElementById('winBanner').classList.remove('show');
 }
 
-// QR Code generation
-function setupQR() {
-  const urlEl = document.getElementById('qrUrl');
-  const qrEl = document.getElementById('qrcode');
-  const isPlaceholder = HOSTED_URL === 'YOUR-URL-HERE';
-
-  if (isPlaceholder) {
-    urlEl.textContent = '[ Paste your hosted URL into the code to activate ]';
-    qrEl.innerHTML = '<div class="qr-placeholder">QR code will appear here after you add your URL</div>';
-  } else {
-    urlEl.textContent = HOSTED_URL;
-    new QRCode(qrEl, {
-      text: HOSTED_URL,
-      width: 160,
-      height: 160,
-      colorDark: '#FF4D1C',
-      colorLight: '#0A0A0A',
-      correctLevel: QRCode.CorrectLevel.H
-    });
-  }
-}
-
 renderGrid();
-setupQR();
 </script>
 </body>
 </html>
