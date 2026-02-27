@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Startup Grind Networking Bingo</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Clash+Display:wght@500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fire: #FF4D1C;
+    --gold: #FFB800;
+    --dark: #0A0A0A;
+    --mid: #1A1A1A;
+    --card-bg: #111111;
+    --border: #2A2A2A;
+    --text: #F5F0E8;
+    --muted: #888;
+    --marked: #FF4D1C;
+    --marked-bg: rgba(255, 77, 28, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 32px 16px 48px;
+    background-image: 
+      radial-gradient(ellipse 60% 40% at 50% -10%, rgba(255,77,28,0.18) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .event-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--fire);
+    border: 1px solid var(--fire);
+    padding: 4px 12px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 8vw, 72px);
+    letter-spacing: 0.05em;
+    line-height: 0.9;
+    color: var(--text);
+  }
+
+  h1 span {
+    color: var(--fire);
+  }
+
+  .subtitle {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .meta-item strong {
+    color: var(--gold);
+    display: block;
+    font-size: 11px;
+  }
+
+  .card-wrapper {
+    position: relative;
+    max-width: 700px;
+    width: 100%;
+  }
+
+  .corner-decor {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: var(--fire);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .corner-decor.tl { top: -8px; left: -8px; border-width: 2px 0 0 2px; }
+  .corner-decor.tr { top: -8px; right: -8px; border-width: 2px 2px 0 0; }
+  .corner-decor.bl { bottom: -8px; left: -8px; border-width: 0 0 2px 2px; }
+  .corner-decor.br { bottom: -8px; right: -8px; border-width: 0 2px 2px 0; }
+
+  .bingo-header {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .bingo-letter {
+    background: var(--fire);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .bingo-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+  }
+
+  .cell {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .cell::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--marked-bg);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .cell:hover {
+    border-color: rgba(255,77,28,0.4);
+    transform: scale(1.02);
+  }
+
+  .cell.marked {
+    border-color: var(--marked);
+    background: var(--card-bg);
+  }
+
+  .cell.marked::before {
+    opacity: 1;
+  }
+
+  .cell.marked .cell-icon {
+    filter: none;
+  }
+
+  .cell.marked::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-size: 10px;
+    color: var(--fire);
+    font-weight: bold;
+  }
+
+  .cell.free-space {
+    background: var(--fire);
+    border-color: var(--fire);
+  }
+
+  .cell.free-space .cell-text {
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .cell.free-space .cell-icon {
+    filter: brightness(0) invert(1);
+  }
+
+  .cell-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+    line-height: 1;
+    filter: grayscale(0.3);
+  }
+
+  .cell-text {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(7px, 1.3vw, 9.5px);
+    line-height: 1.3;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .bingo-win-banner {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .bingo-win-banner.show {
+    display: flex;
+  }
+
+  .win-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    color: var(--fire);
+    letter-spacing: 0.1em;
+    animation: pulse 0.5s ease infinite alternate;
+  }
+
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
+  }
+
+  .win-sub {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .win-close {
+    margin-top: 16px;
+    background: transparent;
+    border: 1px solid var(--muted);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .win-close:hover {
+    border-color: var(--text);
+    color: var(--text);
+  }
+
+  footer {
+    margin-top: 28px;
+    text-align: center;
+  }
+
+  .instructions {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    line-height: 2;
+  }
+
+  .reset-btn {
+    margin-top: 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover {
+    border-color: var(--fire);
+    color: var(--fire);
+  }
+
+  .qr-section {
+    margin-top: 40px;
+    border-top: 1px solid var(--border);
+    padding-top: 32px;
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .qr-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .qr-box {
+    display: inline-block;
+    padding: 12px;
+    background: var(--dark);
+    border: 1px solid var(--fire);
+    margin-bottom: 10px;
+  }
+
+  .qr-placeholder {
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+    text-transform: uppercase;
+    border: 1px dashed var(--border);
+    padding: 16px;
+  }
+
+  .qr-url {
+    font-size: 10px;
+    color: var(--fire);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    word-break: break-all;
+  }
+
+  .qr-hint {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .hosting-steps {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    padding: 20px 24px;
+    text-align: left;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .hosting-title {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+
+  .hosting-steps ol {
+    padding-left: 18px;
+  }
+
+  .hosting-steps li {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 2;
+    text-transform: uppercase;
+  }
+
+  .hosting-steps li strong {
+    color: var(--text);
+  }
+
+  @media print {
+    body { background: white; }
+    .reset-btn, .instructions, .qr-section { display: none; }
+    .cell { border: 1px solid #ccc !important; }
+    .bingo-letter { background: #222 !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="event-tag">🔥 Startup Grind NYC · Tech Happy Hour</div>
+  <h1>NETWORKING<br><span>BINGO</span></h1>
+  <p class="subtitle">Global Entrepreneurship · Technology Management Program</p>
+  <div class="meta">
+    <div class="meta-item"><strong>📍 Location</strong>Time Out Market, Union Square</div>
+    <div class="meta-item"><strong>🕔 Time</strong>5:00 PM · Come & Go</div>
+    <div class="meta-item"><strong>🎯 Mission</strong>Connect. Learn. Build.</div>
+  </div>
+</header>
+
+<div class="card-wrapper">
+  <div class="corner-decor tl"></div>
+  <div class="corner-decor tr"></div>
+  <div class="corner-decor bl"></div>
+  <div class="corner-decor br"></div>
+
+  <div class="bingo-header">
+    <div class="bingo-letter">B</div>
+    <div class="bingo-letter">I</div>
+    <div class="bingo-letter">N</div>
+    <div class="bingo-letter">G</div>
+    <div class="bingo-letter">O</div>
+  </div>
+
+  <div class="bingo-grid" id="grid"></div>
+</div>
+
+<footer>
+  <p class="instructions">Click a square when you complete it · Get 5 in a row to win!</p>
+  <p class="instructions">Your card is unique — every student gets a different layout.</p>
+  <button class="reset-btn" onclick="resetCard()">↺ Shuffle & Reset My Card</button>
+
+  <div class="qr-section">
+    <p class="qr-label">Share this card with your class</p>
+    <div class="qr-box" id="qrcode"></div>
+    <p class="qr-url" id="qrUrl"></p>
+    <p class="qr-hint">⬆ Replace the URL in the code with your hosted link to activate the QR code.</p>
+    <div class="hosting-steps">
+      <p class="hosting-title">🚀 How to Host (Free, 2 min)</p>
+      <ol>
+        <li>Go to <strong>netlify.com</strong> → "Add new site" → "Deploy manually"</li>
+        <li>Drag & drop this <strong>.html file</strong> into the upload area</li>
+        <li>Copy your live URL and replace <strong>YOUR-URL-HERE</strong> in the code</li>
+        <li>Students scan the QR code or open the link on their phones</li>
+      </ol>
+    </div>
+  </div>
+</footer>
+
+<div class="bingo-win-banner" id="winBanner">
+  <div class="win-text">BINGO!</div>
+  <div class="win-sub">You're a networking pro 🔥</div>
+  <button class="win-close" onclick="closeWin()">Keep Playing</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ─── CONFIG: Replace with your hosted URL after deploying ───────────────────
+const HOSTED_URL = 'YOUR-URL-HERE';
+// ────────────────────────────────────────────────────────────────────────────
+
+const ALL_CELLS = [
+  { icon: "🎤", text: "Deliver your 30-second elevator pitch to a stranger" },
+  { icon: "🔗", text: "Send a LinkedIn request to someone while still talking to them" },
+  { icon: "❓", text: "Ask someone what their biggest current challenge is" },
+  { icon: "🌍", text: "Introduce yourself to someone from a different country" },
+  { icon: "🪄", text: "Introduce two people you just met to each other" },
+  { icon: "💬", text: "Start a conversation with someone standing alone" },
+  { icon: "📧", text: "Get someone's contact info and save it in your phone on the spot" },
+  { icon: "🤔", text: "Ask someone what problem their startup or company is solving" },
+  { icon: "🧠", text: "Share a technology trend and get their reaction" },
+  { icon: "🎯", text: "Ask a founder for one piece of advice for early-career entrepreneurs" },
+  { icon: "🌐", text: "Ask someone how their industry differs across global markets" },
+  { icon: "💡", text: "Pitch a business idea and ask for honest feedback" },
+  { icon: "🗣️", text: "Join a group conversation already in progress" },
+  { icon: "📲", text: "Exchange Instagram or social handles with someone in tech" },
+  { icon: "🤝", text: "Find something you and someone you meet have in common professionally" },
+  { icon: "🏙️", text: "Ask someone what they love or hate about the NYC startup scene" },
+  { icon: "🤖", text: "Start a conversation about AI's impact on their industry" },
+  { icon: "📖", text: "Share a book, podcast, or resource and get a recommendation back" },
+  { icon: "🔄", text: "Ask someone what they would do differently if starting over" },
+  { icon: "🎓", text: "Tell someone about your program and what you're studying" },
+  { icon: "🔍", text: "Ask three different people what tools or software they use daily" },
+  { icon: "📸", text: "Take a photo with someone new you met tonight" },
+  { icon: "💼", text: "Ask someone how they landed their current role or started their company" },
+  { icon: "🌱", text: "Tell someone one thing you're hoping to learn or do after graduation" },
+];
+
+const FREE_CELL = { icon: "⚡", text: "FREE SPACE\nConnect & Grind!", free: true };
+
+// Fisher-Yates shuffle
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Build or restore the student's unique card order
+function getCardOrder() {
+  const saved = localStorage.getItem('bingoOrder');
+  if (saved) return JSON.parse(saved);
+  const shuffled = shuffle(ALL_CELLS);          // shuffle all 24
+  const order = [
+    ...shuffled.slice(0, 12),                   // first 12 before center
+    { __free: true },                            // center free space (index 12)
+    ...shuffled.slice(12),                       // remaining 12 after center
+  ];
+  localStorage.setItem('bingoOrder', JSON.stringify(order));
+  return order;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  const order = getCardOrder();
+  const marked = JSON.parse(localStorage.getItem('bingoMarked') || '{"12":true}');
+
+  order.forEach((cell, i) => {
+    const isfree = cell.__free;
+    const data = isfree ? FREE_CELL : cell;
+    const div = document.createElement('div');
+    div.className = 'cell' + (isfree ? ' free-space' : '') + (marked[i] ? ' marked' : '');
+    div.innerHTML = `<div class="cell-icon">${data.icon}</div><div class="cell-text">${data.text}</div>`;
+    if (!isfree) {
+      div.addEventListener('click', () => toggleCell(i));
+    }
+    grid.appendChild(div);
+  });
+}
+
+function toggleCell(i) {
+  const marked = JSON.parse(localStorage.getItem('bingoMarked') || '{"12":true}');
+  marked[i] = !marked[i];
+  localStorage.setItem('bingoMarked', JSON.stringify(marked));
+  renderGrid();
+  checkWin(marked);
+}
+
+function checkWin(marked) {
+  const wins = [
+    [0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],
+    [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
+    [0,6,12,18,24],[4,8,12,16,20]
+  ];
+  for (const line of wins) {
+    if (line.every(i => marked[i])) {
+      document.getElementById('winBanner').classList.add('show');
+      return;
+    }
+  }
+}
+
+function resetCard() {
+  localStorage.removeItem('bingoOrder');
+  localStorage.removeItem('bingoMarked');
+  renderGrid();
+}
+
+function closeWin() {
+  document.getElementById('winBanner').classList.remove('show');
+}
+
+// QR Code generation
+function setupQR() {
+  const urlEl = document.getElementById('qrUrl');
+  const qrEl = document.getElementById('qrcode');
+  const isPlaceholder = HOSTED_URL === 'YOUR-URL-HERE';
+
+  if (isPlaceholder) {
+    urlEl.textContent = '[ Paste your hosted URL into the code to activate ]';
+    qrEl.innerHTML = '<div class="qr-placeholder">QR code will appear here after you add your URL</div>';
+  } else {
+    urlEl.textContent = HOSTED_URL;
+    new QRCode(qrEl, {
+      text: HOSTED_URL,
+      width: 160,
+      height: 160,
+      colorDark: '#FF4D1C',
+      colorLight: '#0A0A0A',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+  }
+}
+
+renderGrid();
+setupQR();
+</script>
+</body>
+</html>
